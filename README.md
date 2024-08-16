@@ -17,6 +17,9 @@
 
 ## スクリーンショット
 
+- 端末はPixel5、OSバージョンはAndroid14です
+- 全てダークモードで撮影しています
+
 | 地域一覧 | 都道府県一覧 | 路線一覧 | 駅一覧 | 駅詳細 |
 | :---: | :---: | :---: | :---: | :---: |
 | <img src="./images/1_area-list.png" /> | <img src="./images/2_prefecture-list.png" /> | <img src="./images/3_line-list.png" /> | <img src="./images/4_station-list.png" /> | <img src="./images/5_station-detail.png" /> |
