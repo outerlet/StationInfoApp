@@ -4,9 +4,14 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.compose)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.google.dagger.hilt.android)
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
 android {
+    signingConfigs {
+        create("default") {
+        }
+    }
     namespace = "jp.craftman1take.stationinfoapp"
     compileSdk = 35
 
@@ -21,6 +26,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        signingConfig = signingConfigs.getByName("default")
     }
 
     buildTypes {
@@ -39,6 +45,7 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+        viewBinding = true
     }
     packaging {
         resources {
@@ -65,6 +72,11 @@ dependencies {
     implementation(libs.androidx.constraintlayout.compose)
 
     implementation(libs.google.dagger.hilt.android)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.play.services.maps)
+    implementation(libs.androidx.constraintlayout)
     ksp(libs.google.dagger.hilt.android.compiler)
 
     implementation(libs.squareup.retrofit2)

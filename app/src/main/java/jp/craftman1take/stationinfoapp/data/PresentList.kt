@@ -6,13 +6,6 @@ data class PresentList(
     val lineList: List<Entity.Line>? = null,
     val stationList: List<Entity.Station>? = null,
 ) {
-    constructor() : this(
-        areaList = null,
-        prefectureList = null,
-        lineList = null,
-        stationList = null,
-    )
-
     val title: String
         get() = when {
             stationList != null -> "駅一覧"

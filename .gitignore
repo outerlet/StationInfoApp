@@ -8,3 +8,6 @@ build
 captures
 local.properties
 *.ipr
+
+# Application Settings Resource
+app_settings.xml

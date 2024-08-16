@@ -1,5 +1,6 @@
 package jp.craftman1take.stationinfoapp.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -55,7 +56,7 @@ class MainActivity : ComponentActivity() {
                             is Entity.Area -> viewModel.requestPrefectures(it)
                             is Entity.Prefecture -> viewModel.requestLines(it)
                             is Entity.Line -> viewModel.requestStations(it)
-                            else -> Unit
+                            is Entity.Station -> startActivity(Intent(this, StationMapActivity::class.java))
                         }
                     }
                 }
