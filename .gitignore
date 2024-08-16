@@ -1,0 +1,13 @@
+*.iml
+.gradle
+.idea
+.DS_Store
+.externalNativeBuild
+.cxx
+build
+captures
+local.properties
+*.ipr
+
+# Application Settings Resource
+app_settings.xml
