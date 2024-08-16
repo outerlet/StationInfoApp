@@ -25,14 +25,43 @@ class MainViewModel @Inject constructor(
             runCatching {
                 heartRailsRepository.requestAreas()
             }.onSuccess { res ->
-                val newList = res.response.names.map { Entity.Area(it) }
-
+                val areaList = res.response.toEntityList()
                 _presentList.postValue(
-                    _presentList.value?.copy(areaList = newList) ?: PresentList(areaList = newList)
+                    _presentList.value?.copy(areaList = areaList) ?: PresentList(areaList = areaList)
                 )
             }.onFailure {
                 Timber.e(it)
             }
         }
+    }
+
+    fun requestPrefecture(area: Entity.Area) {
+        viewModelScope.launch(Dispatchers.Default) {
+            runCatching {
+                heartRailsRepository.requestPrefectures(area = area)
+            }.onSuccess {
+                val prefectureList = it.response.toEntityList(area = area)
+                _presentList.postValue(
+                    checkNotNull(_presentList.value).copy(prefectureList = prefectureList)
+                )
+            }.onFailure {
+                Timber.e(it)
+            }
+        }
+    }
+
+    fun previousList(): Boolean {
+        val nextList = _presentList.value?.let { list ->
+            when {
+                list.stationList != null -> list.copy(stationList = null)
+                list.lineList != null -> list.copy(lineList = null)
+                list.prefectureList != null -> list.copy(prefectureList = null)
+                else -> null
+            }
+        } ?: return false
+
+        _presentList.value = nextList
+
+        return true
     }
 }

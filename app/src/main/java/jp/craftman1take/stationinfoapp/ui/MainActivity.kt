@@ -24,10 +24,9 @@ import jp.craftman1take.stationinfoapp.data.Entity
 import jp.craftman1take.stationinfoapp.data.PresentList
 import jp.craftman1take.stationinfoapp.data.sampleAreaList
 import jp.craftman1take.stationinfoapp.ui.composable.AreaList
+import jp.craftman1take.stationinfoapp.ui.composable.PrefectureList
 import jp.craftman1take.stationinfoapp.ui.theme.StationInfoAppTheme
 import jp.craftman1take.stationinfoapp.viewmodel.MainViewModel
-import timber.log.Timber
-import kotlin.reflect.typeOf
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -46,13 +45,22 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         presentList = presentList.value,
                     ) {
-                        Timber.d("${it.name} is clicked.")
+                        when (it) {
+                            is Entity.Area -> viewModel.requestPrefecture(it)
+                            else -> Unit
+                        }
                     }
                 }
             }
         }
 
         viewModel.requestArea()
+    }
+
+    override fun onBackPressed() {
+        if (!viewModel.previousList()) {
+            super.onBackPressed()
+        }
     }
 }
 
@@ -80,13 +88,22 @@ fun MainContent(
         },
         modifier = modifier,
     ) { innerPadding ->
+        val listModifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+
         if (presentList != null) {
             when {
+                presentList.prefectureList != null -> {
+                    PrefectureList(
+                        modifier = listModifier,
+                        prefectureList = presentList.prefectureList,
+                        onClick = { onClick(it) }
+                    )
+                }
                 presentList.areaList != null -> {
                     AreaList(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding),
+                        modifier = listModifier,
                         areaList = presentList.areaList,
                         onClick = { onClick(it) },
                     )
