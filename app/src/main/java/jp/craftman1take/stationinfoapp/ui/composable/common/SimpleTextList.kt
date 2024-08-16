@@ -1,4 +1,4 @@
-package jp.craftman1take.stationinfoapp.ui.composable
+package jp.craftman1take.stationinfoapp.ui.composable.common
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable

@@ -7,3 +7,7 @@
 - 株式会社ハートレイルズ様が公開されているAPIを使用しております
   - [ハートレイルズ社のOHP](https://www.heartrails.com/ja)
   - [HeartRails Express API仕様](https://express.heartrails.com/api.html)
+
+## 追記
+
+- 駅一覧では駅名標よろしく横線に色をつけていますが、元ネタは[こちら](https://ja.wikipedia.org/wiki/日本の鉄道ラインカラー一覧)です

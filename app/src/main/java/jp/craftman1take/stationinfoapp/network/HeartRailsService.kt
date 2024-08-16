@@ -19,5 +19,5 @@ interface HeartRailsService {
     suspend fun getStations(
         @Query("prefecture") prefectureName: String,
         @Query("line") lineName: String,
-    ) : Response<HeartRails.Station>
+    ) : Response<HeartRails.StationWrapper>
 }

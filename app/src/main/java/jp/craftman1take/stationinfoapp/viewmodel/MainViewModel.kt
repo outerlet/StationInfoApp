@@ -20,7 +20,7 @@ class MainViewModel @Inject constructor(
     private val _presentList = MutableLiveData<PresentList>()
     val presentList: LiveData<PresentList> = _presentList
 
-    fun requestArea() {
+    fun requestAreas() {
         viewModelScope.launch(Dispatchers.Default) {
             runCatching {
                 heartRailsRepository.requestAreas()
@@ -35,14 +35,15 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun requestPrefecture(area: Entity.Area) {
+    fun requestPrefectures(area: Entity.Area) {
         viewModelScope.launch(Dispatchers.Default) {
             runCatching {
                 heartRailsRepository.requestPrefectures(area = area)
             }.onSuccess {
-                val prefectureList = it.response.toEntityList(area = area)
                 _presentList.postValue(
-                    checkNotNull(_presentList.value).copy(prefectureList = prefectureList)
+                    checkNotNull(_presentList.value).copy(
+                        prefectureList = it.response.toEntityList(area = area),
+                    )
                 )
             }.onFailure {
                 Timber.e(it)
@@ -50,7 +51,39 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun previousList(): Boolean {
+    fun requestLines(prefecture: Entity.Prefecture) {
+        viewModelScope.launch(Dispatchers.Default) {
+            runCatching {
+                heartRailsRepository.requestLines(prefecture = prefecture)
+            }.onSuccess {
+                _presentList.postValue(
+                    checkNotNull(_presentList.value).copy(
+                        lineList = it.response.toEntityList(prefecture = prefecture),
+                    )
+                )
+            }.onFailure {
+                Timber.e(it)
+            }
+        }
+    }
+
+    fun requestStations(line: Entity.Line) {
+        viewModelScope.launch(Dispatchers.Default) {
+            runCatching {
+                heartRailsRepository.requestStations(line = line)
+            }.onSuccess {
+                _presentList.postValue(
+                    checkNotNull(_presentList.value).copy(
+                        stationList = it.response.toEntityList(line),
+                    )
+                )
+            }.onFailure {
+                Timber.e(it)
+            }
+        }
+    }
+
+    fun previous(): Boolean {
         val nextList = _presentList.value?.let { list ->
             when {
                 list.stationList != null -> list.copy(stationList = null)

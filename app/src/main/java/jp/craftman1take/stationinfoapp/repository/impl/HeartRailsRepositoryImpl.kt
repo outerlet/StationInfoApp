@@ -20,6 +20,6 @@ class HeartRailsRepositoryImpl @Inject constructor(
     override suspend fun requestLines(prefecture: Entity.Prefecture): Response<HeartRails.Line> =
         service.getLines(prefectureName = prefecture.name)
 
-    override suspend fun requestStations(line: Entity.Line): Response<HeartRails.Station> =
+    override suspend fun requestStations(line: Entity.Line): Response<HeartRails.StationWrapper> =
         service.getStations(prefectureName = line.prefecture.name, lineName = line.name)
 }

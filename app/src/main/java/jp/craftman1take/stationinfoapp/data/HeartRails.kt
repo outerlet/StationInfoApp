@@ -37,6 +37,14 @@ sealed interface HeartRails {
     }
 
     @JsonClass(generateAdapter = true)
+    data class StationWrapper(
+        @Json(name = "station")
+        val stations: List<Station>,
+    ) : HeartRails {
+        fun toEntityList(line: Entity.Line) = stations.map { it.toEntity(line) }
+    }
+
+    @JsonClass(generateAdapter = true)
     data class Station(
         @Json(name = "name")
         val name: String,

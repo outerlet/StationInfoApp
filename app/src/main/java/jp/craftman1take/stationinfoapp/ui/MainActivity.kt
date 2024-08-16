@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,13 +20,17 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dagger.hilt.android.AndroidEntryPoint
 import jp.craftman1take.stationinfoapp.data.Entity
 import jp.craftman1take.stationinfoapp.data.PresentList
 import jp.craftman1take.stationinfoapp.data.sampleAreaList
 import jp.craftman1take.stationinfoapp.ui.composable.AreaList
+import jp.craftman1take.stationinfoapp.ui.composable.LineList
 import jp.craftman1take.stationinfoapp.ui.composable.PrefectureList
+import jp.craftman1take.stationinfoapp.ui.composable.StationList
 import jp.craftman1take.stationinfoapp.ui.theme.StationInfoAppTheme
 import jp.craftman1take.stationinfoapp.viewmodel.MainViewModel
 
@@ -46,7 +52,9 @@ class MainActivity : ComponentActivity() {
                         presentList = presentList.value,
                     ) {
                         when (it) {
-                            is Entity.Area -> viewModel.requestPrefecture(it)
+                            is Entity.Area -> viewModel.requestPrefectures(it)
+                            is Entity.Prefecture -> viewModel.requestLines(it)
+                            is Entity.Line -> viewModel.requestStations(it)
                             else -> Unit
                         }
                     }
@@ -54,11 +62,14 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        viewModel.requestArea()
+        viewModel.requestAreas()
     }
 
+    @Deprecated("This method has been deprecated at Android 13")
+    @Suppress("Deprecation")
     override fun onBackPressed() {
-        if (!viewModel.previousList()) {
+        // FIXME Compose Navigationのバックスタックでこのハンドリングを巧くやりたい
+        if (!viewModel.previous()) {
             super.onBackPressed()
         }
     }
@@ -90,24 +101,42 @@ fun MainContent(
     ) { innerPadding ->
         val listModifier = Modifier
             .fillMaxSize()
-            .padding(innerPadding)
+            .padding(
+                top = innerPadding.calculateTopPadding() + 8.dp,
+                bottom = innerPadding.calculateBottomPadding(),
+                start = innerPadding.calculateStartPadding(layoutDirection = LayoutDirection.Ltr) + 12.dp,
+                end = innerPadding.calculateEndPadding(layoutDirection = LayoutDirection.Rtl) + 12.dp,
+            )
 
-        if (presentList != null) {
-            when {
-                presentList.prefectureList != null -> {
-                    PrefectureList(
-                        modifier = listModifier,
-                        prefectureList = presentList.prefectureList,
-                        onClick = { onClick(it) }
-                    )
-                }
-                presentList.areaList != null -> {
-                    AreaList(
-                        modifier = listModifier,
-                        areaList = presentList.areaList,
-                        onClick = { onClick(it) },
-                    )
-                }
+        when {
+            presentList == null -> Unit
+            presentList.stationList != null -> {
+                StationList(
+                    modifier = listModifier,
+                    stationList = presentList.stationList,
+                    onClick = { onClick(it) },
+                )
+            }
+            presentList.lineList != null -> {
+                LineList(
+                    modifier = listModifier,
+                    lineList = presentList.lineList,
+                    onClick = { onClick(it) },
+                )
+            }
+            presentList.prefectureList != null -> {
+                PrefectureList(
+                    modifier = listModifier,
+                    prefectureList = presentList.prefectureList,
+                    onClick = { onClick(it) },
+                )
+            }
+            presentList.areaList != null -> {
+                AreaList(
+                    modifier = listModifier,
+                    areaList = presentList.areaList,
+                    onClick = { onClick(it) },
+                )
             }
         }
     }

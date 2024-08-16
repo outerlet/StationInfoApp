@@ -1,6 +1,6 @@
 package jp.craftman1take.stationinfoapp.data
 
-
+// 地域一覧をプレビューするためのダミーデータ
 val sampleAreaList = listOf(
     Entity.Area("関東"),
     Entity.Area("中部"),
@@ -8,6 +8,7 @@ val sampleAreaList = listOf(
     Entity.Area("九州"),
 )
 
+// 都道府県一覧をプレビューするためのダミーデータ
 val samplePrefectureList = listOf("大阪", "兵庫", "京都", "奈良", "和歌山", "滋賀").map {
     Entity.Prefecture(
         area = sampleAreaList.first(),
@@ -15,6 +16,7 @@ val samplePrefectureList = listOf("大阪", "兵庫", "京都", "奈良", "和�
     )
 }
 
+// 路線一覧をプレビューするためのダミーデータ
 val sampleLineList = listOf(
     "JR大阪環状線",
     "JR東西線",
@@ -37,6 +39,7 @@ val sampleLineList = listOf(
 
 private val line = checkNotNull(sampleLineList.find { it.name == "JR大阪環状線" })
 
+// 駅一覧をプレビューするためのダミーデータ
 val sampleStationList = listOf(
     Entity.Station.Normal(
         line = line,
@@ -192,6 +195,7 @@ val sampleStationList = listOf(
     ),
 )
 
+// 特定の駅をプレビューするためのダミーデータ
 val sampleStation = Entity.Station.Normal(
     name = "品川",
     line = Entity.Line(

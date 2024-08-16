@@ -7,6 +7,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import jp.craftman1take.stationinfoapp.data.Entity
 import jp.craftman1take.stationinfoapp.data.sampleAreaList
+import jp.craftman1take.stationinfoapp.ui.composable.common.SimpleTextList
 
 @Composable
 fun AreaList(
