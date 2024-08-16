@@ -1,23 +1,22 @@
 package jp.craftman1take.stationinfoapp.ui
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,6 +31,7 @@ import jp.craftman1take.stationinfoapp.ui.composable.AreaList
 import jp.craftman1take.stationinfoapp.ui.composable.LineList
 import jp.craftman1take.stationinfoapp.ui.composable.PrefectureList
 import jp.craftman1take.stationinfoapp.ui.composable.StationList
+import jp.craftman1take.stationinfoapp.ui.composable.common.PlainTopBar
 import jp.craftman1take.stationinfoapp.ui.theme.StationInfoAppTheme
 import jp.craftman1take.stationinfoapp.viewmodel.MainViewModel
 
@@ -46,10 +46,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             StationInfoAppTheme {
                 Surface {
-                    val presentList = viewModel.presentList.observeAsState()
+                    val isLoading = viewModel.isLoading.observeAsState(initial = false)
+                    val presentList = viewModel.presentList.observeAsState(initial = PresentList())
 
                     MainContent(
                         modifier = Modifier.fillMaxSize(),
+                        isLoading = isLoading.value,
                         presentList = presentList.value,
                     ) {
                         when (it) {
@@ -76,76 +78,93 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainContent(
     modifier: Modifier = Modifier,
-    presentList: PresentList? = null,
+    isLoading: Boolean = false,
+    presentList: PresentList = PresentList(),
     onClick: (Entity) -> Unit = {}
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Blue,
-                    titleContentColor = Color.White,
-                ),
-                title = {
-                    Text(
-                        fontSize = 24.sp,
-                        text = presentList?.title ?: "",
-                    )
-                },
+            PlainTopBar(
+                containerColor = Color.Blue,
+                titleColor = Color.White,
+                fontSize = 24.sp,
+                text = presentList.title,
             )
         },
         modifier = modifier,
     ) { innerPadding ->
-        val listModifier = Modifier
-            .fillMaxSize()
-            .padding(
-                top = innerPadding.calculateTopPadding() + 8.dp,
-                bottom = innerPadding.calculateBottomPadding(),
-                start = innerPadding.calculateStartPadding(layoutDirection = LayoutDirection.Ltr) + 12.dp,
-                end = innerPadding.calculateEndPadding(layoutDirection = LayoutDirection.Rtl) + 12.dp,
-            )
+        ComposePresentList(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    top = innerPadding.calculateTopPadding() + 8.dp,
+                    bottom = innerPadding.calculateBottomPadding() + 8.dp,
+                    start = innerPadding.calculateStartPadding(layoutDirection = LayoutDirection.Ltr) + 12.dp,
+                    end = innerPadding.calculateEndPadding(layoutDirection = LayoutDirection.Rtl) + 12.dp,
+                ),
+            presentList = presentList,
+            onClick = onClick,
+        )
 
-        when {
-            presentList == null -> Unit
-            presentList.stationList != null -> {
-                StationList(
-                    modifier = listModifier,
-                    stationList = presentList.stationList,
-                    onClick = { onClick(it) },
-                )
-            }
-            presentList.lineList != null -> {
-                LineList(
-                    modifier = listModifier,
-                    lineList = presentList.lineList,
-                    onClick = { onClick(it) },
-                )
-            }
-            presentList.prefectureList != null -> {
-                PrefectureList(
-                    modifier = listModifier,
-                    prefectureList = presentList.prefectureList,
-                    onClick = { onClick(it) },
-                )
-            }
-            presentList.areaList != null -> {
-                AreaList(
-                    modifier = listModifier,
-                    areaList = presentList.areaList,
-                    onClick = { onClick(it) },
-                )
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .background(color = Color(0xCC000000)),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator()
             }
         }
     }
 }
 
+@Composable
+fun ComposePresentList(
+    modifier: Modifier = Modifier,
+    presentList: PresentList,
+    onClick: (Entity) -> Unit,
+) {
+    when {
+        presentList.stationList != null -> {
+            StationList(
+                modifier = modifier,
+                stationList = presentList.stationList,
+                onClick = { onClick(it) },
+            )
+        }
+        presentList.lineList != null -> {
+            LineList(
+                modifier = modifier,
+                lineList = presentList.lineList,
+                onClick = { onClick(it) },
+            )
+        }
+        presentList.prefectureList != null -> {
+            PrefectureList(
+                modifier = modifier,
+                prefectureList = presentList.prefectureList,
+                onClick = { onClick(it) },
+            )
+        }
+        presentList.areaList != null -> {
+            AreaList(
+                modifier = modifier,
+                areaList = presentList.areaList,
+                onClick = { onClick(it) },
+            )
+        }
+        else -> Unit
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun MainContentPreview() {
     StationInfoAppTheme {
         MainContent(
             modifier = Modifier.fillMaxSize(),

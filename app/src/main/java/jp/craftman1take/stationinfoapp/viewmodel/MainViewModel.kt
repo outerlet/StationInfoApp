@@ -17,10 +17,15 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val heartRailsRepository: HeartRailsRepository,
 ) : ViewModel() {
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> = _isLoading
+
     private val _presentList = MutableLiveData<PresentList>()
     val presentList: LiveData<PresentList> = _presentList
 
     fun requestAreas() {
+        _isLoading.value = true
+
         viewModelScope.launch(Dispatchers.Default) {
             runCatching {
                 heartRailsRepository.requestAreas()
@@ -31,11 +36,15 @@ class MainViewModel @Inject constructor(
                 )
             }.onFailure {
                 Timber.e(it)
+            }.also {
+                _isLoading.postValue(false)
             }
         }
     }
 
     fun requestPrefectures(area: Entity.Area) {
+        _isLoading.value = true
+
         viewModelScope.launch(Dispatchers.Default) {
             runCatching {
                 heartRailsRepository.requestPrefectures(area = area)
@@ -47,11 +56,15 @@ class MainViewModel @Inject constructor(
                 )
             }.onFailure {
                 Timber.e(it)
+            }.also {
+                _isLoading.postValue(false)
             }
         }
     }
 
     fun requestLines(prefecture: Entity.Prefecture) {
+        _isLoading.value = true
+
         viewModelScope.launch(Dispatchers.Default) {
             runCatching {
                 heartRailsRepository.requestLines(prefecture = prefecture)
@@ -63,11 +76,15 @@ class MainViewModel @Inject constructor(
                 )
             }.onFailure {
                 Timber.e(it)
+            }.also {
+                _isLoading.postValue(false)
             }
         }
     }
 
     fun requestStations(line: Entity.Line) {
+        _isLoading.value = true
+
         viewModelScope.launch(Dispatchers.Default) {
             runCatching {
                 heartRailsRepository.requestStations(line = line)
@@ -79,6 +96,8 @@ class MainViewModel @Inject constructor(
                 )
             }.onFailure {
                 Timber.e(it)
+            }.also {
+                _isLoading.postValue(false)
             }
         }
     }
