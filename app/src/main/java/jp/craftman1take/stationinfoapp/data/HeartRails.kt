@@ -14,19 +14,27 @@ sealed interface HeartRails {
     data class Area(
         @Json(name = "area")
         val names: List<String>,
-    ) : HeartRails
+    ) : HeartRails {
+        fun toEntityList(): List<Entity.Area> = names.map { Entity.Area(name = it) }
+    }
 
     @JsonClass(generateAdapter = true)
     data class Prefecture(
         @Json(name = "prefecture")
         val names: List<String>,
-    ) : HeartRails
+    ) : HeartRails {
+        fun toEntityList(area: Entity.Area): List<Entity.Prefecture> =
+            names.map { Entity.Prefecture(area = area, name = it) }
+    }
 
     @JsonClass(generateAdapter = true)
     data class Line(
         @Json(name = "line")
         val names: List<String>,
-    ) : HeartRails
+    ) : HeartRails {
+        fun toEntityList(prefecture: Entity.Prefecture) =
+            names.map { Entity.Line(prefecture = prefecture, name = it) }
+    }
 
     @JsonClass(generateAdapter = true)
     data class Station(
@@ -44,5 +52,34 @@ sealed interface HeartRails {
         val line: String,
         @Json(name = "prefecture")
         val prefecture: String,
-    ) : HeartRails
+    ) : HeartRails {
+        fun toEntity(line: Entity.Line): Entity.Station =
+            when {
+                previousName.isNullOrBlank() && !nextName.isNullOrBlank() ->
+                    Entity.Station.Starting(
+                        line = line,
+                        name = name,
+                        nextName = nextName,
+                        latitude = latitude.toDouble(),
+                        longitude = longitude.toDouble(),
+                    )
+                !previousName.isNullOrBlank() && nextName.isNullOrBlank() ->
+                    Entity.Station.Terminal(
+                        line = line,
+                        name = name,
+                        previousName = previousName,
+                        latitude = latitude.toDouble(),
+                        longitude = longitude.toDouble(),
+                    )
+                else ->
+                    Entity.Station.Normal(
+                        line = line,
+                        name = name,
+                        nextName = checkNotNull(nextName),
+                        previousName = checkNotNull(previousName),
+                        latitude = latitude.toDouble(),
+                        longitude = longitude.toDouble(),
+                    )
+            }
+    }
 }
