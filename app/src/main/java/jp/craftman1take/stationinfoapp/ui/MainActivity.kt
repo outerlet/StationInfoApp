@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
                             is Entity.Area -> viewModel.requestPrefectures(it)
                             is Entity.Prefecture -> viewModel.requestLines(it)
                             is Entity.Line -> viewModel.requestStations(it)
-                            is Entity.Station -> startActivity(Intent(this, StationMapActivity::class.java))
+                            is Entity.Station -> startActivity(StationMapActivity.launcherIntent(this, it))
                         }
                     }
                 }

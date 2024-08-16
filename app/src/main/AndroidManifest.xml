@@ -35,7 +35,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:name=".ui.StationMapActivity"
             android:exported="false"
             android:label="@string/title_activity_station_map" />

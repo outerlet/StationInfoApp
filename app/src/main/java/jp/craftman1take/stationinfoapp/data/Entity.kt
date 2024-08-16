@@ -1,13 +1,16 @@
 package jp.craftman1take.stationinfoapp.data
 
+import android.os.Parcelable
 import androidx.compose.ui.graphics.Color
+import kotlinx.parcelize.Parcelize
 
-sealed interface Entity {
+sealed interface Entity : Parcelable {
     val name: String
 
     /**
      * 地域
      */
+    @Parcelize
     data class Area(
         override val name: String,
     ) : Entity {
@@ -27,6 +30,7 @@ sealed interface Entity {
     /**
      * 都道府県
      */
+    @Parcelize
     data class Prefecture(
         val area: Area,
         override val name: String,
@@ -35,6 +39,7 @@ sealed interface Entity {
     /**
      * 路線
      */
+    @Parcelize
     data class Line(
         val prefecture: Prefecture,
         override val name: String,
@@ -43,6 +48,7 @@ sealed interface Entity {
     /**
      * 駅
      */
+    @Parcelize
     sealed interface Station : Entity {
         val line: Line
         val latitude: Double
@@ -51,6 +57,7 @@ sealed interface Entity {
         /**
          * 始発駅
          */
+        @Parcelize
         data class Starting(
             override val line: Line,
             override val name: String,
@@ -62,6 +69,7 @@ sealed interface Entity {
         /**
          * 終着駅
          */
+        @Parcelize
         data class Terminal(
             override val line: Line,
             override val name: String,
@@ -73,6 +81,7 @@ sealed interface Entity {
         /**
          * 一般駅（途中駅）
          */
+        @Parcelize
         data class Normal(
             override val line: Line,
             override val name: String,
